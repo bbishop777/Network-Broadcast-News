@@ -1,2 +1,2 @@
-var name = ["jill24","jody324","Brad","jody234"];
+var name = ["Brad777","Jill","Brad","Joey","josey","checkers","Chuck","Pete","Malicious","Jeff","jill","Jacob","Peter","brad","Jeffey","Pert","Jeffrey","Poo","Frank","Zeke","Dave","Dane","Omar","Solo","Han","Jow","Fifty","Franklin"];
 module.exports = name;

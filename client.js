@@ -26,7 +26,7 @@ var connectionToServer = net.connect({host: 'localhost', port: 6969}, function()
       // if(clientName === 'Brad777') {
       //   clientName += '\[ADMIN\]';
       // }
-      connectionToServer.write(clientName + '==>: ' + data);
+      connectionToServer.write(clientName + '==>: ' + data );
     }
   });
 
