@@ -15,8 +15,18 @@ var Server = net.createServer(function (client) {
 
   process.stdout.write('\rServer: ' + clients[clients.length-1].remotePort + ' ' + clients.length + '\n');
 
+  process.stdin.setEncoding('utf-8');
+
   process.stdin.on('data', function(data){
-      if(client.username !== undefined) {
+      if (data.search(/kick/i) === 0) {
+        var kickIt = data.split(' ');
+        var kickThem = kickIt[1].trim();
+        var kickStatus = kick(kickThem);
+        if (kickStatus === true) {
+          return;
+        }
+      } else if(client.username !== undefined) {
+        console.log('NOOOOT HERREEE');
         client.write('\r[ADMIN]:' + data +'me:');
         process.stdout.write('\rServer: ');
      }
@@ -100,6 +110,16 @@ var Server = net.createServer(function (client) {
       if((clients[i] != client) && (clients[i].username !== undefined)) {
         process.stdout.write('\rServer: To ' + clients[i].username + ': ' + client.username + ' has joined the Chatroom!\nServer: ');
         clients[i].write('\r' + client.username + ' has joined the Chatroom!\nme: ');
+      }
+    }
+  }
+//Something wrong here.  Kicks them but breaks the Server
+//
+  function kick(kickThem) {
+    for (var j = 0; j < clients.length; j++) {
+      if(clients[j].username === kickThem) {
+        clients[j].end('\r[ADMIN]: You have been kicked out from the Chatroom!');
+        return true;
       }
     }
   }
