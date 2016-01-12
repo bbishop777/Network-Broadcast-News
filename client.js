@@ -1,4 +1,5 @@
 var net = require('net');
+var clientName = null;
 
 var connectionToServer = net.connect({host: 'localhost', port: 6969}, function() {
   process.stdin.setEncoding('utf8');
@@ -12,10 +13,21 @@ var connectionToServer = net.connect({host: 'localhost', port: 6969}, function()
 //process.stdin is anything the user types in & once they hit enter
 //it triggers the `.on 'data' event (an async process as this is a listener waiting)
   process.stdin.on('data', function(data){
-    process.stdout.write('==>: ');
+    if(data.search(/username:/i) >= 0) {
+      var usrNameSplit = data.split(' ');
+      clientName = usrNameSplit[1].trim();
+      //process.stdout.write();
+      connectionToServer.write(data);
+    } else if(clientName === null) {
+      connectionToServer.write(data);
+    } else {
     //the connectionToServer.write takes the data written by user and sends
     //to the server
-    connectionToServer.write(data);
+      // if(clientName === 'Brad777') {
+      //   clientName += '\[ADMIN\]';
+      // }
+      connectionToServer.write(clientName + '==>: ' + data);
+    }
   });
 
 
