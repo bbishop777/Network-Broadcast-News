@@ -5,6 +5,35 @@ var clients = [];
 
 
 
+process.stdin.on('data', function(data) {
+    if (data.search(/kick/i) === 0) {
+      var whosOut = data.split(' ');
+      var bootThem = whosOut[1].trim();
+      var kStatus = kick(bootThem);
+      if (kStatus === true) {
+        return;
+      }
+    }
+    for(var p = 0; p < clients.length; p++) {
+      if(clients[p].username !== undefined) {
+        clients[p].write('\r[ADMIN]:' + data +'me:');
+        process.stdout.write('\rServer: ');
+      }
+   }
+});
+
+function kick(bootThem) {
+  console.log("Hereeeee");
+  for (var j = 0; j < clients.length; j++) {
+    if(clients[j].username === bootThem) {
+      //clients[j].status = 'bad';
+      clients[j].write('\r[ADMIN]: You have been removed from the Chatroom!');
+      clients[j].end();
+      return true;
+    }
+  }
+}
+
 var Server = net.createServer(function (client) {
   client.setEncoding('utf-8');
   clients.push(client);
@@ -17,20 +46,6 @@ var Server = net.createServer(function (client) {
 
   process.stdin.setEncoding('utf-8');
 
-  process.stdin.on('data', function(data){
-      if (data.search(/kick/i) === 0) {
-        var kickIt = data.split(' ');
-        var kickThem = kickIt[1].trim();
-        var kickStatus = kick(kickThem);
-        if (kickStatus === true) {
-          return;
-        }
-      } else if(client.username !== undefined) {
-        console.log('NOOOOT HERREEE');
-        client.write('\r[ADMIN]:' + data +'me:');
-        process.stdout.write('\rServer: ');
-     }
-  });
 
   client.on('data', function (data) {
     if(data.search(/username:/i) === 0) {
@@ -113,22 +128,14 @@ var Server = net.createServer(function (client) {
       }
     }
   }
-//Something wrong here.  Kicks them but breaks the Server
-//
-  function kick(kickThem) {
-    for (var j = 0; j < clients.length; j++) {
-      if(clients[j].username === kickThem) {
-        clients[j].end('\r[ADMIN]: You have been kicked out from the Chatroom!');
-        return true;
-      }
-    }
-  }
 
   client.on('end', function() {
     process.stdout.write('\rServer: ' + client.username + ' disconnected\nServer: ');
+      console.log('Heeeereee?', clients.length);
     for (var i = 0; i < clients.length; i++) {
       if ((client.status !== 'bad') && (clients[i] !== client)) {
         clients[i].write('\r' + client.username +' has left the building!\nme: ');
+        process.stdout.write('\rServer: To ' + clients[i].username + ': ' + client.username + 'has left the building!\nServer: ');
       }
     }
 
@@ -138,7 +145,6 @@ var Server = net.createServer(function (client) {
           process.stdout.write('\rServer: Removing ' + client.remotePort + ' ' + client.username +'\n');
           clients.splice(z, 1);
           process.stdout.write('\rServer: Clients left after disconnect: ' + clients.length + '\n');
-        //could record this in Server too
       }
     }
     return;
